@@ -1,0 +1,159 @@
+<!-- tienda/templates/tienda/base.html -->
+
+   
+        <!-- <Template base que será heredado por todas las páginas> -->
+        {% load static %}  <!-- <Carga el sistema de archivos estáticos de Django> -->
+        
+        <!DOCTYPE html>  <!-- <Define el tipo de documento HTML5> -->
+        <html lang="es">  <!-- <Indica que el contenido está en español> -->
+        
+        <head>  <!-- <Cabecera del documento: metadatos y recursos> -->
+            <meta charset="UTF-8">  <!-- <Usa codificación UTF-8 para admitir acentos y caracteres especiales> -->
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- <Hace la página responsiva para móviles> -->
+            <title>{% block title %}Sistema de Tienda{% endblock %}</title>  <!-- <Bloque dinámico para cambiar el título desde plantillas hijas> -->
+            
+            <!-- <Bootstrap CSS: framework de estilos prediseñados> -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            
+            <!-- <Font Awesome: biblioteca de íconos> -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            
+            <!-- <Hoja de estilos personalizada del proyecto> -->
+            <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        </head>
+        
+        <body>  <!-- <Cuerpo principal del documento> -->
+        
+            <!-- <Barra de navegación visible solo si el usuario está autenticado> -->
+            {% if user.is_authenticated %}
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary">  <!-- <Barra azul con texto claro> -->
+                <div class="container-fluid">  <!-- <Contenedor fluido ocupa todo el ancho> -->
+        
+                    <!-- <Logo o nombre de la aplicación> -->
+                    <a class="navbar-brand" href="{% url 'home' %}">
+                        <i class="fas fa-store"></i> Sistema Tienda
+                    </a>
+        
+                    <!-- <Botón hamburguesa para menú móvil> -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+        
+                    <!-- <Sección colapsable del menú> -->
+                    <div class="collapse navbar-collapse" id="navbarNav">
+        
+                        <ul class="navbar-nav me-auto">  <!-- <Menú alineado a la izquierda> -->
+                            
+                            <!-- <Enlace al inicio> -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'home' %}">
+                                    <i class="fas fa-home"></i> Inicio
+                                </a>
+                            </li>
+                            
+                            <!-- <Menú de productos> -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'producto_lista' %}">
+                                    <i class="fas fa-box"></i> Productos
+                                </a>
+                            </li>
+        
+                            <!-- <Menú de categorías: oculto si el usuario es vendedor> -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'categoria_lista' %}">
+                                    <i class="fas fa-tags"></i> Categorías
+                                </a>
+                            </li>
+        
+                            <!-- <Menú de proveedores: visible solo para administrador> -->
+                            {% if user.is_superuser or user.perfil.rol != 'cliente' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'proveedor_lista' %}">
+                                    <i class="fas fa-truck"></i> Proveedores
+                                </a>
+                            </li>
+                            {% endif %}
+        
+                            <!-- <Menú de clientes: disponible para todos> -->
+                            {% if user.is_superuser or user.perfil.rol != 'cliente' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'cliente_lista' %}">
+                                    <i class="fas fa-users"></i> Clientes
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <!-- <Menú de ventas: disponible para todos> -->
+                            {% if user.is_superuser or user.perfil.rol != 'cliente' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'reporte_ventas' %}">
+                                    <i class="fas fa-chart-line"></i> Ventas
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <!-- <Menú de reportes: visible solo para gerente y administrador> -->
+                            {% if user.is_superuser or user.perfil.rol != 'cliente' %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="reportesDropdown" data-bs-toggle="dropdown">
+                                    <i class="fas fa-chart-bar"></i> Reportes
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'reporte_productos' %}"><i class="fas fa-boxes"></i> Reporte de Productos</a></li>
+                                </ul>
+                            </li>
+                            {% endif %}
+        
+                        </ul>
+        
+                        <!-- <Menú del usuario autenticado (derecha)> -->
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user"></i> {{ user.username }}  <!-- <Muestra el nombre del usuario> -->
+                                </a>
+        
+                                <ul class="dropdown-menu dropdown-menu-end">  <!-- <Menú desplegable alineado a la derecha> -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'logout' %}">
+                                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            {% endif %}
+        
+            <!-- <Contenedor principal del contenido de cada página> -->
+            <div class="container mt-4">  <!-- <Espaciado superior de Bootstrap> -->
+                
+                <!-- <Mensajes de Django (éxito, error, información)> -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}  <!-- <Muestra el texto del mensaje> -->
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>  <!-- <Botón para cerrar> -->
+                        </div>
+                    {% endfor %}
+                {% endif %}
+        
+                <!-- <Bloque que las páginas hijas reemplazan con su propio contenido> -->
+                {% block content %}
+                {% endblock %}
+            </div>
+        
+            <!-- <Pie de página> -->
+            <footer class="footer mt-5 py-3 bg-light">
+                <div class="container text-center">
+                    <span class="text-muted">© 2025 Sistema de Tienda - Práctica Universitaria</span>
+                </div>
+            </footer>
+        
+            <!-- <Bootstrap JS: para menús y alertas interactivas> -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        </body>
+        </html>

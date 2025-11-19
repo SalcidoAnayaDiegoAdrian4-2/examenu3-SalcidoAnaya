@@ -1,0 +1,29 @@
+<!-- tienda/templates/tienda/producto_confirm_delete.html -->
+{% extends 'tienda/base.html' %}
+
+{% block title %}Eliminar Producto{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card border-danger shadow-lg">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Confirmar Eliminación</h3>
+            </div>
+            <div class="card-body">
+                <p>¿Está seguro que desea <strong>desactivar</strong> (eliminación lógica) el producto:</p>
+                <h4 class="text-danger">{{ producto.nombre }} (ID: {{ producto.id }})</h4>
+                <p class="text-muted">Esta acción lo ocultará de la lista de productos activos, pero no se borrará permanentemente de la base de datos.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg"><i class="fas fa-trash-alt me-1"></i> Sí, Desactivar</button>
+                        <a href="{% url 'producto_lista' %}" class="btn btn-secondary btn-lg">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

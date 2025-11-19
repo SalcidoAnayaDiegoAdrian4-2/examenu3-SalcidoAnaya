@@ -1,0 +1,94 @@
+{% extends 'tienda/base.html' %}
+{% block title %}Dashboard - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4 text-center">Panel de Control (Dashboard)</h1>
+
+    <div class="row g-4">
+        {% if user.perfil.rol == 'cliente' %}
+            <!-- Para clientes: mostrar información básica de bienvenida -->
+            <div class="col-12">
+                <div class="card text-white bg-primary shadow-lg">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Bienvenido a tu Panel de Cliente</h5>
+                        <p class="card-text">Aquí puedes gestionar tu perfil y ver tu historial de compras.</p>
+                        <i class="fas fa-user-circle fa-4x mt-3"></i>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Mostrar todas las estadísticas para vendedores y superiores -->
+            <div class="col-md-6 col-lg-4">
+            <div class="card text-white bg-success shadow-lg">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Total Productos Activos</h5>
+                            <p class="card-text fs-2">{{ total_productos }}</p>
+                        </div>
+                        <i class="fas fa-box-open fa-3x"></i>
+                    </div>
+                    <a href="{% url 'producto_lista' %}" class="btn btn-outline-light mt-3 w-100">Ver Productos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card text-white bg-info shadow-lg">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Total Categorías</h5>
+                            <p class="card-text fs-2">{{ total_categorias }}</p>
+                        </div>
+                        <i class="fas fa-tags fa-3x"></i>
+                    </div>
+                    
+                    <a href="{% url 'categoria_lista' %}" class="btn btn-outline-light mt-3 w-100">Administrar Categorías</a>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card text-white bg-warning shadow-lg">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title">Ventas de Hoy</h5>
+                            <p class="card-text fs-2">${{ total_ventas_hoy|floatformat:2 }}</p>
+                            <small class="text-white-50">{{ cantidad_ventas_hoy }} ventas realizadas</small>
+                        </div>
+                        <i class="fas fa-chart-line fa-3x"></i>
+                    </div>
+                    <a href="{% url 'reporte_ventas' %}" class="btn btn-outline-light mt-3 w-100">Ver Reporte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        {% endif %}
+    </div>
+
+    <div class="mt-5 p-4 bg-light border rounded">
+        {% if user.perfil.rol != 'vendedor' %}
+        <h4>Acciones Rápidas</h4>
+        {% endif %}
+        {% if user.perfil.rol == 'cliente' %}
+            <a href="{% url 'cliente_perfil' %}" class="btn btn-primary me-2"><i class="fas fa-user-edit"></i> Mi Perfil</a>
+            <a href="{% url 'cliente_compras' %}" class="btn btn-success me-2"><i class="fas fa-shopping-cart"></i> Mis Compras</a>
+        {% else %}
+        {% if user.perfil.rol != 'cliente' and user.perfil.rol != 'vendedor' %}
+            <!-- Para vendedores y superiores: mostrar todas las opciones -->
+             <a href="{% url 'venta_crear' %}" class="btn btn-success me-2"><i class="fas fa-chart-line"></i> Añadir Venta</a>
+        <a href="{% url 'producto_crear' %}" class="btn btn-primary me-2"><i class="fas fa-plus"></i> Añadir Producto</a>
+
+        <a href="{% url 'cliente_crear' %}" class="btn btn-secondary me-2"><i class="fas fa-user-plus"></i> Registrar Cliente</a>
+{% endif %}
+    </div>
+</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends 'tienda/base.html' %}
+{% block title %}Ventas Rápidas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4"> Ventas Rápidas</h1>
+
+    <!-- Formulario para agregar productos -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Agregar Producto a la Venta</h5>
+        </div>
+        <div class="card-body">
+            <form id="ventaForm" class="row g-3">
+                <div class="col-md-6">
+                    <label for="producto" class="form-label">Nombre del Producto</label>
+                    <input type="text" class="form-control" id="producto" required placeholder="Ej: Laptop Dell">
+                </div>
+                <div class="col-md-4">
+                    <label for="precio" class="form-label">Precio ($)</label>
+                    <input type="number" class="form-control" id="precio" step="0.01" min="0" required placeholder="0.00">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">Agregar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Ventas</h5>
+                    <h2 id="totalVentas">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Ingresos Totales</h5>
+                    <h2 id="totalIngresos">$0.00</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de ventas -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Lista de Ventas</h5>
+        </div>
+        <div class="card-body">
+            <div id="listaVentas" class="table-responsive">
+                <table class="table table-striped" id="tablaVentas">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                        <!-- Las filas se agregarán dinámicamente con JavaScript -->
+                    </tbody>
+                </table>
+                <p id="mensajeVacio" class="text-muted text-center mt-3">No hay ventas registradas aún.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de regresar -->
+    <div class="mt-4">
+        <a href="{% url 'home' %}" class="btn btn-secondary">← Regresar al Dashboard</a>
+        <button id="limpiarVentas" class="btn btn-warning ms-2"> Limpiar Todas las Ventas</button>
+    </div>
+</div>
+
+<script>
+// Array para almacenar las ventas (solo en memoria del navegador)
+let ventas = [];
+let contadorVentas = 0;
+
+// Elementos del DOM
+const ventaForm = document.getElementById('ventaForm');
+const productoInput = document.getElementById('producto');
+const precioInput = document.getElementById('precio');
+const totalVentasEl = document.getElementById('totalVentas');
+const totalIngresosEl = document.getElementById('totalIngresos');
+const cuerpoTabla = document.getElementById('cuerpoTabla');
+const mensajeVacio = document.getElementById('mensajeVacio');
+const limpiarVentasBtn = document.getElementById('limpiarVentas');
+
+// Función para actualizar las estadísticas
+function actualizarEstadisticas() {
+    const totalVentas = ventas.length;
+    const totalIngresos = ventas.reduce((sum, venta) => sum + parseFloat(venta.precio), 0);
+
+    totalVentasEl.textContent = totalVentas;
+    totalIngresosEl.textContent = `$${totalIngresos.toFixed(2)}`;
+}
+
+// Función para renderizar la tabla de ventas
+function renderizarTabla() {
+    cuerpoTabla.innerHTML = '';
+
+    if (ventas.length === 0) {
+        mensajeVacio.style.display = 'block';
+        return;
+    }
+
+    mensajeVacio.style.display = 'none';
+
+    ventas.forEach((venta, index) => {
+        const fila = document.createElement('tr');
+
+        fila.innerHTML = `
+            <td>${venta.id}</td>
+            <td>${venta.producto}</td>
+            <td>$${parseFloat(venta.precio).toFixed(2)}</td>
+            <td>
+                <button class="btn btn-sm btn-danger" onclick="eliminarVenta(${index})">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </td>
+        `;
+
+        cuerpoTabla.appendChild(fila);
+    });
+}
+
+// Función para agregar una venta
+function agregarVenta(producto, precio) {
+    contadorVentas++;
+    const nuevaVenta = {
+        id: contadorVentas,
+        producto: producto.trim(),
+        precio: parseFloat(precio)
+    };
+
+    ventas.push(nuevaVenta);
+    actualizarEstadisticas();
+    renderizarTabla();
+
+    // Limpiar el formulario
+    productoInput.value = '';
+    precioInput.value = '';
+
+    // Mostrar mensaje de éxito (opcional)
+    mostrarMensaje('Producto agregado exitosamente!', 'success');
+}
+
+// Función para eliminar una venta
+function eliminarVenta(index) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta venta?')) {
+        ventas.splice(index, 1);
+        actualizarEstadisticas();
+        renderizarTabla();
+        mostrarMensaje('Venta eliminada.', 'warning');
+    }
+}
+
+// Función para limpiar todas las ventas
+function limpiarTodasLasVentas() {
+    if (confirm('¿Estás seguro de que quieres eliminar TODAS las ventas? Esta acción no se puede deshacer.')) {
+        ventas = [];
+        contadorVentas = 0;
+        actualizarEstadisticas();
+        renderizarTabla();
+        mostrarMensaje('Todas las ventas han sido eliminadas.', 'warning');
+    }
+}
+
+// Función para mostrar mensajes (opcional)
+function mostrarMensaje(mensaje, tipo) {
+    // Crear elemento de alerta
+    const alerta = document.createElement('div');
+    alerta.className = `alert alert-${tipo} alert-dismissible fade show position-fixed`;
+    alerta.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alerta.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(alerta);
+
+    // Auto-remover después de 3 segundos
+    setTimeout(() => {
+        if (alerta.parentNode) {
+            alerta.remove();
+        }
+    }, 3000);
+}
+
+// Event listeners
+ventaForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const producto = productoInput.value;
+    const precio = precioInput.value;
+
+    if (producto && precio && parseFloat(precio) > 0) {
+        agregarVenta(producto, precio);
+    } else {
+        mostrarMensaje('Por favor, ingresa un producto válido y un precio mayor a 0.', 'danger');
+    }
+});
+
+limpiarVentasBtn.addEventListener('click', limpiarTodasLasVentas);
+
+// Inicializar la página
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarEstadisticas();
+    renderizarTabla();
+});
+</script>
+
+<style>
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

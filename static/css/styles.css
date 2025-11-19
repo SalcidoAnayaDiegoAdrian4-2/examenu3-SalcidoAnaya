@@ -1,0 +1,34 @@
+/* static/css/styles.css */
+
+/* Estilos para el cuerpo (opcional) */
+body {
+    background-color: #f8f9fa; /* Color de fondo suave (similar a Bootstrap light). */
+    font-family: Arial, sans-serif;
+}
+
+/* Estilo para la barra de navegación */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Estilo para tarjetas de dashboard */
+.card {
+    border-radius: 0.75rem;
+    transition: transform 0.2s; /* Habilita una transición suave al pasar el ratón. */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Eleva la tarjeta 5px al pasar el ratón para un efecto visual. */
+}
+
+/* Estilo para tablas */
+.table th {
+    font-weight: 700;
+}
+
+/* Estilo para formularios de login/crud */
+.card-header.bg-primary {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem; /* Asegura que el encabezado del formulario tenga bordes redondeados. */
+}

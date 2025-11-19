@@ -1,0 +1,59 @@
+<!-- tienda/templates/tienda/producto_lista.html -->
+{% extends 'tienda/base.html' %}
+
+{% block title %}Lista de Productos{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Gestión de Productos Activos ({{ productos|length }})</h1>
+{% if user.perfil.rol != 'cliente' and user.perfil.rol != 'vendedor' %}
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'producto_crear' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Nuevo Producto
+    </a>
+</div>
+{% endif %}
+
+<div class="table-responsive shadow-sm rounded">
+    <table class="table table-hover table-striped">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio Venta</th>
+                <th>Stock</th>
+                <th>Categoría</th>
+                <th>Proveedor</th>
+                {% if user.perfil.rol != 'cliente' and user.perfil.rol != 'vendedor' %}
+                <th>Acciones</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.id }}</td>
+                <td>{{ producto.nombre }}</td>
+                <td>${{ producto.precio_venta|floatformat:2 }}</td>
+                <td><span class="badge {% if producto.stock < 10 %}bg-danger{% else %}bg-success{% endif %}">{{ producto.stock }}</span></td>
+                <td>{{ producto.categoria.nombre }}</td>
+                <td>{{ producto.proveedor.nombre }}</td>
+                <td>
+                    {% if user.perfil.rol != 'cliente' and user.perfil.rol != 'vendedor' %}
+                    <a href="{% url 'producto_editar' producto.pk %}" class="btn btn-sm btn-info me-2" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'producto_eliminar' producto.pk %}" class="btn btn-sm btn-danger" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No hay productos activos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

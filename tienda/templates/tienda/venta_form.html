@@ -1,0 +1,144 @@
+<!-- tienda/templates/tienda/venta_form.html -->
+{% extends 'tienda/base.html' %}
+
+{% block title %}Registrar Venta{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-cash-register"></i> Registrar Nueva Venta</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Campo Cliente -->
+                    <div class="mb-4">
+                        <h5 class="form-label fw-bold mb-3">Cliente</h5>
+                        <div class="client-field bg-light rounded p-3">
+                            {{ form.cliente }}
+                        </div>
+                    </div>
+
+                    <!-- Campo Producto -->
+                    <div class="mb-4">
+                        <h5 class="form-label fw-bold mb-3">Producto</h5>
+                        <div class="product-field bg-light rounded p-3">
+                            {{ form.producto }}
+                        </div>
+                    </div>
+
+                    <!-- Campo Cantidad -->
+                    <div class="mb-4">
+                        <h5 class="form-label fw-bold mb-3">Cantidad</h5>
+                        <div class="quantity-field bg-light rounded p-3">
+                            {{ form.cantidad }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between gap-4">
+                        <a href="{% url 'reporte_ventas' %}" class="btn btn-light btn-md border">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-md">
+                            <i class="fas fa-check"></i> Registrar Venta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos para que los campos se vean como en la imagen */
+    .form-control, .form-select {
+        border: none;
+        background: transparent;
+        padding: 0;
+        font-weight: 500;
+        color: #333;
+        width: 100%;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: none;
+        background: transparent;
+        border: none;
+    }
+    
+    /* Estilo específico para el campo de cantidad */
+    #id_cantidad {
+        font-weight: 600;
+    }
+    
+    /* Estilo para los campos de selección */
+    .client-field, .product-field, .quantity-field {
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Estilo del botón cancelar */
+    .btn-light {
+        background-color: #f8f9fa;
+        border-color: #dee2e6 !important;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .btn-light:hover {
+        background-color: #e9ecef;
+        border-color: #adb5bd !important;
+    }
+    
+    /* Tamaño de botones más pequeños */
+    .btn-md {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Más espacio entre botones */
+    .gap-4 {
+        gap: 1.5rem !important;
+    }
+    
+    /* Ajustes de espaciado */
+    .card-body {
+        padding: 2rem;
+    }
+    
+    .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+</style>
+
+<!-- Script para mejorar la apariencia de los selects -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Agregar estilos a los elementos de formulario
+        const selects = document.querySelectorAll('select');
+        const inputs = document.querySelectorAll('input');
+        
+        selects.forEach(select => {
+            select.classList.add('form-select');
+            // Si no hay opción seleccionada, mostrar un placeholder
+            if (!select.value) {
+                select.style.color = '#6c757d';
+            }
+        });
+        
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+            if (input.type === 'number') {
+                input.placeholder = '0';
+            }
+        });
+    });
+</script>
+{% endblock %}

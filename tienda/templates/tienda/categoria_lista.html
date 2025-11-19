@@ -1,0 +1,52 @@
+{% extends 'tienda/base.html' %}
+
+{% block title %}Lista de Categorías{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Gestión de Categorías ({{ categorias|length }})</h1>
+{% if user.perfil.rol != 'cliente' and user.perfil.rol != 'vendedor' %}
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'categoria_crear' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Nueva Categoría
+    </a>
+</div>
+{% endif %}
+
+<div class="table-responsive shadow-sm rounded">
+    <table class="table table-hover table-striped">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                {% if user.perfil.rol != 'cliente' and user.perfil.rol != 'vendedor' %}
+                <th>Acciones</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in categorias %}
+            <tr>
+                <td>{{ cat.id }}</td>
+                <td>{{ cat.nombre }}</td>
+                <td>{{ cat.descripcion|default:"N/A" }}</td>
+                <td>
+                    {% if user.perfil.rol != 'cliente' and user.perfil.rol != 'vendedor' %}
+                    <a href="{% url 'categoria_editar' cat.pk %}" class="btn btn-sm btn-info me-2" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'categoria_eliminar' cat.pk %}" class="btn btn-sm btn-danger" title="Eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No hay categorías registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

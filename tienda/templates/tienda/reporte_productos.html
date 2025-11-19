@@ -1,0 +1,132 @@
+{% extends 'tienda/base.html' %}
+
+{% block title %}Reporte de Productos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4"> Reporte de Productos</h1>
+
+    <!-- Estadísticas generales -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Productos</h5>
+                    <h2>{{ total_productos }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Productos Activos</h5>
+                    <h2>{{ productos_activos }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos con bajo stock -->
+    {% if productos_bajo_stock %}
+        <div class="card mb-4 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5> Productos con Stock Bajo (menos de 10 unidades)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Stock</th>
+                                <th>Precio Venta</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in productos_bajo_stock %}
+                                <tr>
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>{{ producto.categoria.nombre }}</td>
+                                    <td><span class="badge bg-danger">{{ producto.stock }}</span></td>
+                                    <td>${{ producto.precio_venta|floatformat:2 }}</td>
+                                    <td>
+                                        {% if producto.activo %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Tabla completa de productos -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Lista Completa de Productos</h5>
+        </div>
+        <div class="card-body">
+            {% if productos %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Stock</th>
+                                <th>Precio Venta</th>
+                                <th>Proveedor</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in productos %}
+                                <tr>
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>{{ producto.categoria.nombre }}</td>
+                                    <td>
+                                        {% if producto.stock < 10 %}
+                                            <span class="badge bg-danger">{{ producto.stock }}</span>
+                                        {% else %}
+                                            <span class="badge bg-success">{{ producto.stock }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ producto.precio_venta|floatformat:2 }}</td>
+                                    <td>
+                                        {% if producto.proveedor %}
+                                            {{ producto.proveedor.nombre }}
+                                        {% else %}
+                                            No especificado
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if producto.activo %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">No hay productos registrados.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botón de regresar -->
+    <div class="mt-4">
+        <a href="{% url 'home' %}" class="btn btn-secondary">← Regresar al Dashboard</a>
+    </div>
+</div>
+{% endblock %}

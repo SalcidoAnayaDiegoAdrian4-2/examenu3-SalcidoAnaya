@@ -1,0 +1,33 @@
+{% extends 'tienda/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ accion }} Cliente{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h3 class="mb-0">{{ accion }} Cliente</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="text-end mt-3">
+                        <a href="{% url 'cliente_lista' %}" class="btn btn-outline-secondary me-2">Cancelar</a>
+                        {% if accion == 'Editar' and es_admin %}
+                            <button type="submit" name="reset_password" value="1" class="btn btn-warning btn-sm ms-2" onclick="return confirm('¿Estás seguro de que quieres resetear la contraseña a \'cliente123\'?')">
+                                <i class="fas fa-key"></i> Resetear Contraseña
+                            </button>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Guardar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
